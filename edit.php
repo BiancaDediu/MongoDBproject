@@ -32,32 +32,27 @@ $article = $client->executeQuery('images.images', $query);
 $doc = current($article->toArray());
         }else
             { 
-           if($_FILES["image"]['name']>0){
            $target="./images/".md5(uniqid(time())).basename($_FILES['image']['name']);
-           }else{
-               $ids = new \MongoDB\BSON\ObjectId($_POST['id']);
-$filters = ['_id' => $ids];
-$querys = new MongoDB\Driver\Query($filters);          
-$articles = $client->executeQuery('images.images', $querys);
-$docs = current($articles->toArray());
-           $target=$docs->image;
-           echo $target;
-           } 
-            
- $data=[
+           $data=[
     
     'nume'=>$_POST['nume'],
     'image'=>$target
     ];
- 
- $id = new \MongoDB\BSON\ObjectId($_POST['id']);
-$filter = ['_id' => $id];
+   $id = new \MongoDB\BSON\ObjectId($_POST['id']);
+    $filter = ['_id' => $id];
     
-$update=['$set'=>$data];
- $bulk->update($filter, $update);
-  $client->executeBulkWrite('images.images',$bulk);
-header('location:welcome.php');
-            }
+   $update=['$set'=>$data];
+    $bulk->update($filter, $update);
+     $client->executeBulkWrite('images.images',$bulk);
+     
+     
+     if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
+       header('location:welcome.php'); ;
+    }else{
+        $msg="Vai! Vai! Vai!!!";
+    }
+}
+           
   ?>
 <h1>Edit:</h1>
 <form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>" enctype="multipart/form-data">
